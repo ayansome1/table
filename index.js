@@ -30,7 +30,12 @@ Table.prototype.createCell = function (value) {
   return td;
 };
 
-Table.prototype.insertRow = function (rowElements, index) {
+/**
+ *
+ * @param {*} rowElements
+ * @param {*} index
+ */
+Table.prototype.insertRow = function (rowElements, index, customEvent) {
   // index starts with 1
   let nthChild = document.querySelector(
     `#${this.id} tbody tr:nth-child(${index})`
@@ -48,10 +53,27 @@ Table.prototype.insertRow = function (rowElements, index) {
   } else {
     tbody.insertBefore(tr, nthChild); // insert row at given position
   }
+
+  if (customEvent) {
+    tr.dispatchEvent(
+      new CustomEvent(customEvent.eventName, customEvent.eventObj)
+    );
+  }
 };
+
+window.addEventListener('new-row', (e) => {
+  console.log(e);
+});
 
 let x = new Table({ id: 'table-1' });
 x.createHeader(['name', 'roll']);
 x.insertRow([x.createCell('Ayan'), x.createCell(24)], 2);
+
 x.insertRow([x.createCell('Ayan1'), x.createCell(241)], 1);
-x.insertRow([x.createCell('Ayan11'), x.createCell(241)], 1);
+x.insertRow([x.createCell('Ayan11'), x.createCell(241)], 2, {
+  eventName: 'new-row',
+  eventObj: {
+    detail: { name: 'ayan 1st row' },
+    bubbles: true,
+  },
+});
